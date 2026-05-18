@@ -82,20 +82,22 @@ public class FormulaireConnexionController {
           @Override
           protected boolean computeValue() {
             // On vérifie si la chaine est plus petite que 8
-            if (Bindings.greaterThanOrEqual(champMotDePasse.textProperty().length(), 6)) {
-              return true;
-            }
-            // On vérifie si la chaîne contient des chiffres + On vérifie si la chaine
-            // contient des majuscules
-            for (int i = 0; Bindings.size(champMotDePasse).greaterThan(i); i = i + 1) {
-              char carac = champMotDePasse.getText().charAt(i);
-              if (Character.isDigit(carac) || Character.isUpperCase(carac)) {
-                return true;
-              }
-            }
-            boutonOk.disableProperty().bind(motDePasseInvalide);
+            String mdp = champMotDePasse.getText();
+            return mdp.length() < 8
+                || mdp.chars()
+                    .noneMatch(
+                        Character
+                            ::isUpperCase) // on vérifie pour chaque caractère si il correspond à la
+                // constante isUppercase
+                || mdp.chars()
+                    .noneMatch(
+                        Character
+                            ::isDigit); // on vérifie pour chaque caractère si il correspond à la
+            // constante isDigit
+
           }
         };
+    boutonOk.disableProperty().bind(motDePasseInvalide);
   }
 
   /**
@@ -108,11 +110,21 @@ public class FormulaireConnexionController {
     // de passe masqué par autant d'étoiles que de caractères saisis.
     // Exemple : "alice ********" pour identifiant "alice" et mot de passe de 8
     // caractères.
+    String mdp = champMotDePasse.getText();
+    String chaine = "";
+    for (int i = 0; i < mdp.length(); i = i + 1) {
+      chaine = chaine + '*';
+    }
+    String mess = new String(champIdentifiant.getText() + " " + chaine);
+    labelMessage.setText(mess);
   }
 
   /** Action du bouton Annuler. Vide les deux champs et le label de message. */
   @FXML
   private void annuler() {
     // TODO exercice 3 : vider les deux champs et le label message.
+    champIdentifiant.setText("");
+    champMotDePasse.setText("");
+    labelMessage.setText("");
   }
 }
