@@ -81,10 +81,10 @@ public class SiteCarte extends HBox {
     // RuntimeException
     // pour ne pas surcharger la signature du constructeur).
     try {
-      FXMLLoader loader = getClass().getResource("SiteCarte.fxml");
-      loader.setRoot(this);
-      loader.setController(this);
-      loader.load();
+      FXMLLoader FXloader = new FXMLLoader(getClass().getResource("SiteCarte.fxml"));
+      FXloader.setRoot(this);
+      FXloader.setController(this);
+      FXloader.load();
     } catch (java.io.IOException e) {
       throw new RuntimeException("Erreur de chargement", e);
     }
@@ -112,6 +112,12 @@ public class SiteCarte extends HBox {
     // changement, puis appeler majBadge(...) une première fois avec la valeur
     // courante pour
     // initialiser l'affichage.
+    labelCarre.textProperty().bind(numeroCarre);
+    labelNom.textProperty().bind(nomConvivial);
+    labelNbPoints.textProperty().bind(nombrePoints.asString().concat(" points d'écoute"));
+    labelNbPassages.textProperty().bind(nombrePassages.asString().concat(" passages"));
+    joursDepuisDernierPassage.addListener((obs, ancien, nouveau) -> majBadge(nouveau.intValue()));
+    majBadge(getJoursDepuisDernierPassage());
   }
 
   /**
@@ -129,6 +135,21 @@ public class SiteCarte extends HBox {
     // - sinon si jours < 7 : texte "Il y a Nj", classe "badge-fresh"
     // - sinon si jours <= 30 : texte "Il y a Nj", classe "badge-stale"
     // - sinon : texte "Il y a Nj", classe "badge-cold"
+    labelBadge.getStyleClass().removeAll("badge-fresh", "badge-stale", "badge-cold");
+    if (jours < 0) {
+      labelBadge.setText("Jamais utilisé");
+      labelBadge.getStyleClass().add("badge-cold");
+
+    } else if (jours < 7) {
+      labelBadge.setText("Il y a " + getJoursDepuisDernierPassage() + "j");
+      labelBadge.getStyleClass().add("badge-fresh");
+    } else if (jours <= 30) {
+      labelBadge.setText("Il y a " + getJoursDepuisDernierPassage() + "j");
+      labelBadge.getStyleClass().add("badge-stale");
+    } else {
+      labelBadge.setText("Il y a " + getJoursDepuisDernierPassage() + "j");
+      labelBadge.getStyleClass().add("badge-cold");
+    }
   }
 
   // ---------------------------------------------------------------------
